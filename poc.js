@@ -18,41 +18,42 @@ const html = readFixture('singlegrain.html')
 
 const doParsing = () => {
 	return new Promise(function (resolve, reject) {
-
-		var parser = new Parser(cornet);
-		var output = ''
-
-		parser.write(html)
+		var parser = new Parser(cornet, {
+			decodeEntities: true
+		})
 
 		const onDomReady = (dom) => {
+			var output = ''
 			output = getHTML(dom).substring(0, 200)
-			console.log(new Date().valueOf() - s, ' ms taken');
 			resolve(output)
 		}
 
 		const getHTML = (dom) => {
-			return dom.map(function (elem) {
-				return DOM.getOuterHTML(elem);
-			}).join('');
+			return dom.map((elem) => DOM.getOuterHTML(elem)).join('')
 		}
 
-		cornet.on('dom', onDomReady);
+		cornet.on('dom', onDomReady)
 
-		const rules = ['head > title', 'h1']
+		const rules = ['head > title', 'h1', 'meta[name=viewport]']
 
 		for (let rule of rules) {
 			(rule => {
 				const onTitle = cornet.select(rule, elem => {
+					if (rule === 'meta[name=viewport]') {
+						$(elem).attr('content', 'test')
+					}
 					$(elem).text('A different title');
-					cornet.removeListener('element', onTitle);
+					cornet.removeListener('element', onTitle)
 				})
 			})(rule)
 		}
 
+		parser.write(html)
 		parser.end()
 	})
 }
 
 doParsing().then(out => {
+	console.log(new Date().valueOf() - s, ' ms taken')
 	console.log('finished', out)
 })
