@@ -11,40 +11,51 @@ var fs = require("fs")
 var path = require("path")
 
 var readFixture = (fixture) =>
-    fs.readFileSync(path.join(__dirname, `./${fixture}`)).toString()
+	fs.readFileSync(path.join(__dirname, `./${fixture}`)).toString()
 
 var s = new Date().valueOf();
 const html = readFixture('singlegrain.html')
 
 const doParsing = () => {
-    var parser = new Parser(cornet);
+	// return new Promise(function (resolve, reject) {
 
-    parser.write(html)
-    parser.end()
+	var parser = new Parser(cornet);
+	var output = ''
 
-    const onDomReady = (dom) => {
-        console.log(getHTML(dom).substring(0, 200));
-        console.log(new Date().valueOf() - s, ' ms taken');
-    }
+	parser.write(html)
+	const resp = parser.end()
+	console.log(resp);
 
-    const getHTML = (dom) => {
-        return dom.map(function (elem) {
-            return DOM.getOuterHTML(elem);
-        }).join('');
-    }
+	const onDomReady = (dom) => {
+		output = getHTML(dom).substring(0, 200)
+		console.log(new Date().valueOf() - s, ' ms taken');
+		resolve(output)
+	}
 
-    cornet.on('dom', onDomReady);
+	const getHTML = (dom) => {
+		return dom.map(function (elem) {
+			return DOM.getOuterHTML(elem);
+		}).join('');
+	}
 
-    const rules = ['head > title', 'h1']
+	cornet.on('dom', onDomReady);
 
-    for (let rule of rules) {
-        (rule => {
-            const onTitle = cornet.select(rule, elem => {
-                $(elem).text('A different title');
-                cornet.removeListener('element', onTitle);
-            });
-        })(rule);
-    }
+	const rules = ['head > title', 'h1']
+
+	for (let rule of rules) {
+		(rule => {
+			const onTitle = cornet.select(rule, elem => {
+				$(elem).text('A different title');
+				cornet.removeListener('element', onTitle);
+			})
+		})(rule)
+	}
+
+	//})
 }
 
 doParsing()
+
+// doParsing().then(out => {
+// 	console.log(out, 'dude...');
+// })
