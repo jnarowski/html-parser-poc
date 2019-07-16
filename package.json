@@ -1,0 +1,13 @@
+{
+  "name": "html-parser-poc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/jnarowski/html-parser-poc",
+  "author": "jnarowski <jnarowski@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "cornet": "^0.1.5",
+    "htmlparser2": "^3.10.1"
+  }
+}
