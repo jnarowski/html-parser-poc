@@ -37,12 +37,14 @@ const doParsing = () => {
 
     const rules = ['head > title', 'h1']
 
-    rules.forEach(rule => {
-        cornet.select(rule, function (elem) {
-            $(elem).text('A different title');
-            cornet.removeListener('element', onTitle);
-        })
-    })
+    for (let rule of rules) {
+        (rule => {
+            const onTitle = cornet.select(rule, elem => {
+                $(elem).text('A different title');
+                cornet.removeListener('element', onTitle);
+            });
+        })(rule);
+    }
 }
 
 doParsing()
