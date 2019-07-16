@@ -17,45 +17,42 @@ var s = new Date().valueOf();
 const html = readFixture('singlegrain.html')
 
 const doParsing = () => {
-	// return new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 
-	var parser = new Parser(cornet);
-	var output = ''
+		var parser = new Parser(cornet);
+		var output = ''
 
-	parser.write(html)
-	const resp = parser.end()
-	console.log(resp);
+		parser.write(html)
 
-	const onDomReady = (dom) => {
-		output = getHTML(dom).substring(0, 200)
-		console.log(new Date().valueOf() - s, ' ms taken');
-		resolve(output)
-	}
+		const onDomReady = (dom) => {
+			output = getHTML(dom).substring(0, 200)
+			console.log(new Date().valueOf() - s, ' ms taken');
+			resolve(output)
+		}
 
-	const getHTML = (dom) => {
-		return dom.map(function (elem) {
-			return DOM.getOuterHTML(elem);
-		}).join('');
-	}
+		const getHTML = (dom) => {
+			return dom.map(function (elem) {
+				return DOM.getOuterHTML(elem);
+			}).join('');
+		}
 
-	cornet.on('dom', onDomReady);
+		cornet.on('dom', onDomReady);
 
-	const rules = ['head > title', 'h1']
+		const rules = ['head > title', 'h1']
 
-	for (let rule of rules) {
-		(rule => {
-			const onTitle = cornet.select(rule, elem => {
-				$(elem).text('A different title');
-				cornet.removeListener('element', onTitle);
-			})
-		})(rule)
-	}
+		for (let rule of rules) {
+			(rule => {
+				const onTitle = cornet.select(rule, elem => {
+					$(elem).text('A different title');
+					cornet.removeListener('element', onTitle);
+				})
+			})(rule)
+		}
 
-	//})
+		parser.end()
+	})
 }
 
-doParsing()
-
-// doParsing().then(out => {
-// 	console.log(out, 'dude...');
-// })
+doParsing().then(out => {
+	console.log('finished', out)
+})
